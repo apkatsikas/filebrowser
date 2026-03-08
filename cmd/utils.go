@@ -25,6 +25,8 @@ import (
 
 const databasePermissions = 0640
 
+var parseErr viper.ConfigParseError
+
 func getAndParseFileMode(flags *pflag.FlagSet, name string) (fs.FileMode, error) {
 	mode, err := flags.GetString(name)
 	if err != nil {
@@ -118,7 +120,8 @@ func initViper(cmd *cobra.Command) (*viper.Viper, error) {
 
 	// Read in configuration
 	if err := v.ReadInConfig(); err != nil {
-		if errors.Is(err, viper.ConfigParseError{}) {
+
+		if errors.As(err, &parseErr) {
 			return nil, err
 		}
 
